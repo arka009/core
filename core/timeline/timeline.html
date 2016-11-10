@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <link rel="stylesheet" type="text/css" href="../css/reset.css">
+    <style type="text/css">
+    body{
+	padding-bottom: 500px;
+}
+    	.timelinenav {
+    
+    position: fixed;
+    background: #fff;
+    display: none;
+    top: 100px;
+    left: 40px;
+    border-top: 1px solid #cccccc;
+    border-bottom: 1px solid #cccccc;
+    z-index: 9999999;}
+    .timelinenav li.active {
+    border-left: 1px solid #fb253d;
+    border-right: 1px solid #fb253d;
+    background: #fb253d;
+    color: #fff;}
+    .timelinenav li {
+    width: 65px;
+    height: 50px;
+    line-height: 50px;
+    text-align: center;
+    color: #666666;
+    font-size: 12px;
+    cursor: pointer;
+    border-left: 1px solid #cccccc;
+    border-right: 1px solid #cccccc;}
+.wrap{
+	width: 1200px;
+	margin: 0 auto;
+	border: 1px solid #ccc;
+}
+.wrap>h1{
+	margin: 10px 0;
+	background-color: gray;
+	height: 30px;
+	color: #fff;
+	line-height: 30px;
+	text-indent: 2em;
+	font-size: 14px;
+}
+.wrap>div{
+	width: 100%;
+	height: 600px;
+	margin-bottom: 15px;
+	background-color: red;
+}
+    </style>
+
+
+</head>
+
+<body>
+    <ul class="timelinenav" id="timelinenav" style="display: block;">
+        <li class="TreeList active" onclick="XingChengGoMao(this)" id="dayTree0" eday="0">第1天</li>
+        <li class="TreeList" onclick="XingChengGoMao(this)" id="dayTree1" eday="1">第2天</li>
+        <li class="TreeList" onclick="XingChengGoMao(this)" id="dayTree2" eday="2">第3天</li>
+        <li class="TreeList" onclick="XingChengGoMao(this)" id="dayTree3" eday="3">第4天</li>
+        <li class="TreeList" onclick="XingChengGoMao(this)" id="dayTree4" eday="4">第5天</li>
+    </ul>
+    <div class="wrap clearfix">
+    	<h1 id="d0">乘机抵达九华山，入住禅修酒店 — 徽帮菜 — 瑜伽 — 九华河</h1>
+    	<div>
+    		
+    	</div>
+    	<h1 id="d1">乘机抵达九华山，入住禅修酒店 — 徽帮菜 — 瑜伽 — 九华河</h1>
+    	<div>
+    		
+    	</div>
+    	<h1 id="d2">乘机抵达九华山，入住禅修酒店 — 徽帮菜 — 瑜伽 — 九华河</h1>
+    	<div>
+    		
+    	</div>
+    	<h1 id="d3">乘机抵达九华山，入住禅修酒店 — 徽帮菜 — 瑜伽 — 九华河</h1>
+    	<div>
+    		
+    	</div>
+    	<h1 id="d4">乘机抵达九华山，入住禅修酒店 — 徽帮菜 — 瑜伽 — 九华河</h1>
+    	<div>
+    		
+    	</div>
+    </div>
+</body>
+<script type="text/javascript" src="../js/jquery.min.js"></script>
+<script type="text/javascript" src="../js/ScrollTree.js"></script>
+<script type="text/javascript">
+	$(function(){
+	getMaoIndex();
+	});
+
+	var mao  ="";
+//跳转锚点
+function getMaoIndex(){
+	var str = location.search;
+	 mao = str.split("?")[1];
+	if(str.length > 0){
+		
+//		window.location.href = "#"+mao;
+		
+		setTimeout('goMao()',500)
+	}
+}
+
+function goMao(){
+	$("#" + mao).HoverTreeScroll(300);
+}
+
+
+
+
+
+	 showOutDate();
+		    function showOutDate(){
+		        window.onscroll = function(){
+		            
+		            
+
+		            var outTime =$(".wrap>div").length; // 行程天数
+		        
+		            var BodyHei = document.body.scrollHeight;
+		            var scrollHei = document.documentElement.scrollTop + document.body.scrollTop;
+		            
+		          
+		                
+		            var snum = outTime;
+		            var scrollHei = document.documentElement.scrollTop + document.body.scrollTop;
+		            
+		            
+		            $("#timelinenav li").each(function(){
+		                $(this).attr("class","TreeList")
+		            })
+		            
+		            var TreesArr = [];
+		            for(msi = 0; msi < snum ; msi++){
+		                var treeItem  =document.getElementById("d"+msi).offsetTop 
+		                
+		                
+		                TreesArr.push(msi);
+		                var trLen = TreesArr.length;
+		                
+		                if(scrollHei > (treeItem-200) ){
+		                    
+		                    for(var  ai = 0 ; ai < TreesArr.length ; ai ++){
+		                        $("#dayTree"+TreesArr[ai]).attr("class","TreeList");
+		                        
+		                    }
+		                    
+		                    $("#dayTree"+TreesArr[trLen-1]).attr("class","TreeList active");
+		                }
+		            }
+		            
+		            
+		        }
+		    }
+		     function XingChengGoMao(a) {
+     
+     var eday = a.getAttribute("eday");
+
+     $("#d" + eday).HoverTreeScroll(300);
+
+    
+ }
+</script>
+</html>

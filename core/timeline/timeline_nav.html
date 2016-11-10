@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <style type="text/css">
+    a {
+        padding: 6px 30px;
+        margin-right: 15px;
+        background: #f0f;
+        color: #fff;
+        font-size: 14px;
+    }
+    </style>
+</head>
+
+<body>
+    <a href="javascript:;" onclick="getItem(0)">第1天</a>
+    <a href="javascript:;" onclick="getItem(1)">第2天</a>
+    <a href="javascript:;" onclick="getItem(2)">第3天</a>
+    <a href="javascript:;" onclick="getItem(3)">第4天</a>
+    <a href="javascript:;" onclick="getItem(4)">第5天</a>
+</body>
+<script type="text/javascript">
+	function getItem(a){
+	if(a == 0){
+		window.open("timeline.html?d0");
+	}else if(a == 1){
+		window.open("timeline.html?d1");
+	}else if(a == 2){
+		window.open("timeline.html?d2");
+	}else if(a == 3){
+		window.open("timeline.html?d3");
+	}else if(a == 4){
+		window.open("timeline.html?d4");
+	}
+}
+</script>
+</html>
