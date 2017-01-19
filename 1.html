@@ -1,0 +1,312 @@
+
+<!DOCTYPE html>
+<HTML>
+<HEAD>
+    <TITLE> ZTREE DEMO - beforeEditName / beforeRemove / onRemove / beforeRename / onRename</TITLE>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <link rel="stylesheet" href="zTree_v3/css/demo.css" type="text/css">
+    <link rel="stylesheet" href="zTree_v3/css/zTreeStyle/zTreeStyle.css" type="text/css">
+    <script type="text/javascript" src="zTree_v3/js/jquery-1.4.4.min.js"></script>
+    <script type="text/javascript" src="zTree_v3/js/jquery.ztree.core.js"></script>
+    <script type="text/javascript" src="zTree_v3/js/jquery.ztree.excheck.js"></script>
+    <script type="text/javascript" src="zTree_v3/js/jquery.ztree.exedit.js"></script>
+    <SCRIPT type="text/javascript">
+
+
+        var setting = {
+            view: {
+                addHoverDom: addHoverDom,
+                removeHoverDom: removeHoverDom,
+                selectedMulti: false
+            },
+            edit: {
+
+                enable: true,
+                editNameSelectAll: true,
+                showRemoveBtn: showRemoveBtn,
+                showRenameBtn: showRenameBtn,
+                drag: {
+                    autoExpandTrigger: false,
+                    isCopy: true,
+                    isMove: true,
+                    prev: true,
+                    next: true,
+                    inner: false,
+                    minMoveSize: 5,
+                    borderMax: 10,
+                    borderMin: -5,
+                    maxShowNodeNum: 5,
+                    autoOpenTime: 500
+                }
+            },
+            data: {
+                simpleData: {
+                    enable: true
+                }
+            },
+            callback: {
+                beforeDrag: beforeDrag,
+                beforeDrop: beforeDrop,
+                beforeDragOpen: beforeDragOpen,
+                onDrag: onDrag,
+                onDrop: onDrop,
+                onExpand: onExpand,
+
+
+                beforeEditName: beforeEditName,
+                beforeRemove: beforeRemove,
+                beforeRename: beforeRename,
+                onRemove: onRemove,
+                onRename: onRename
+            }
+        };
+
+        var zNodes =[
+            { name:"父节点1 - 展开", open:true,
+                children: [
+                    { name:"父节点11 - 折叠",
+                        children: [
+                            { name:"叶子节点111"},
+                            { name:"叶子节点112"},
+                            { name:"叶子节点113"},
+                            { name:"叶子节点114"}
+                        ]},
+                    { name:"父节点12 - 折叠",
+                        children: [
+                            { name:"叶子节点121"},
+                            { name:"叶子节点122"},
+                            { name:"叶子节点123"},
+                            { name:"叶子节点124"}
+                        ]},
+                    { name:"父节点13 - 没有子节点", isParent:true}
+                ]},
+            { name:"父节点2 - 折叠",
+                children: [
+                    { name:"父节点21 - 展开", open:true,
+                        children: [
+                            { name:"叶子节点211"},
+                            { name:"叶子节点212"},
+                            { name:"叶子节点213"},
+                            { name:"叶子节点214"}
+                        ]},
+                    { name:"父节点22 - 折叠",
+                        children: [
+                            { name:"叶子节点221"},
+                            { name:"叶子节点222"},
+                            { name:"叶子节点223"},
+                            { name:"叶子节点224"}
+                        ]},
+                    { name:"父节点23 - 折叠",
+                        children: [
+                            { name:"叶子节点231"},
+                            { name:"叶子节点232"},
+                            { name:"叶子节点233"},
+                            { name:"叶子节点234"}
+                        ]}
+                ]},
+            { name:"父节点3 - 没有子节点", isParent:true}
+
+        ];
+        function dropPrev(treeId, nodes, targetNode) {
+            var pNode = targetNode.getParentNode();
+            if (pNode && pNode.dropInner === false) {
+                return false;
+            } else {
+                for (var i=0,l=curDragNodes.length; i<l; i++) {
+                    var curPNode = curDragNodes[i].getParentNode();
+                    if (curPNode && curPNode !== targetNode.getParentNode() && curPNode.childOuter === false) {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+        function dropInner(treeId, nodes, targetNode) {
+            if (targetNode && targetNode.dropInner === false) {
+                return false;
+            } else {
+                for (var i=0,l=curDragNodes.length; i<l; i++) {
+                    if (!targetNode && curDragNodes[i].dropRoot === false) {
+                        return false;
+                    } else if (curDragNodes[i].parentTId && curDragNodes[i].getParentNode() !== targetNode && curDragNodes[i].getParentNode().childOuter === false) {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+        function dropNext(treeId, nodes, targetNode) {
+            var pNode = targetNode.getParentNode();
+            if (pNode && pNode.dropInner === false) {
+                return false;
+            } else {
+                for (var i=0,l=curDragNodes.length; i<l; i++) {
+                    var curPNode = curDragNodes[i].getParentNode();
+                    if (curPNode && curPNode !== targetNode.getParentNode() && curPNode.childOuter === false) {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+
+
+
+
+        var log, className = "dark";
+        /*function beforeDrag(treeId, treeNodes) {
+            return false;
+        }*/
+        function beforeDrag(treeId, treeNodes) {
+            className = (className === "dark" ? "":"dark");
+            showLog("[ "+getTime()+" beforeDrag ]&nbsp;&nbsp;&nbsp;&nbsp; drag: " + treeNodes.length + " nodes." );
+            for (var i=0,l=treeNodes.length; i<l; i++) {
+                if (treeNodes[i].drag === false) {
+                    curDragNodes = null;
+                    return false;
+                } else if (treeNodes[i].parentTId && treeNodes[i].getParentNode().childDrag === false) {
+                    curDragNodes = null;
+                    return false;
+                }
+            }
+            curDragNodes = treeNodes;
+            return true;
+        }
+        function beforeDrop(treeId, treeNodes, targetNode, moveType, isCopy) {
+            className = (className === "dark" ? "":"dark");
+            showLog("[ "+getTime()+" beforeDrop ]&nbsp;&nbsp;&nbsp;&nbsp; moveType:" + moveType);
+            showLog("target: " + (targetNode ? targetNode.name : "root") + "  -- is "+ (isCopy==null? "cancel" : isCopy ? "copy" : "move"));
+            return true;
+        }
+
+        function beforeDragOpen(treeId, treeNode) {
+            autoExpandNode = treeNode;
+            return true;
+        }
+
+
+        function onDrag(event, treeId, treeNodes) {
+            className = (className === "dark" ? "":"dark");
+            showLog("[ "+getTime()+" onDrag ]&nbsp;&nbsp;&nbsp;&nbsp; drag: " + treeNodes.length + " nodes." );
+        }
+        function onDrop(event, treeId, treeNodes, targetNode, moveType, isCopy) {
+            className = (className === "dark" ? "":"dark");
+            showLog("[ "+getTime()+" onDrop ]&nbsp;&nbsp;&nbsp;&nbsp; moveType:" + moveType);
+            showLog("target: " + (targetNode ? targetNode.name : "root") + "  -- is "+ (isCopy==null? "cancel" : isCopy ? "copy" : "move"))
+        }
+
+        function onExpand(event, treeId, treeNode) {
+            if (treeNode === autoExpandNode) {
+                className = (className === "dark" ? "":"dark");
+                showLog("[ "+getTime()+" onExpand ]&nbsp;&nbsp;&nbsp;&nbsp;" + treeNode.name);
+            }
+        }
+
+
+
+        function beforeEditName(treeId, treeNode) {
+            className = (className === "dark" ? "":"dark");
+            showLog("[ "+getTime()+" beforeEditName ]&nbsp;&nbsp;&nbsp;&nbsp; " + treeNode.name);
+            var zTree = $.fn.zTree.getZTreeObj("treeDemo");
+            zTree.selectNode(treeNode);
+            setTimeout(function() {
+                if (confirm("进入节点 -- " + treeNode.name + " 的编辑状态吗？")) {
+                    setTimeout(function() {
+                        zTree.editName(treeNode);
+                    }, 0);
+                }
+            }, 0);
+            return false;
+        }
+        function beforeRemove(treeId, treeNode) {
+            className = (className === "dark" ? "":"dark");
+            showLog("[ "+getTime()+" beforeRemove ]&nbsp;&nbsp;&nbsp;&nbsp; " + treeNode.name);
+            var zTree = $.fn.zTree.getZTreeObj("treeDemo");
+            zTree.selectNode(treeNode);
+            return confirm("确认删除 节点 -- " + treeNode.name + " 吗？");
+        }
+        function onRemove(e, treeId, treeNode) {
+            showLog("[ "+getTime()+" onRemove ]&nbsp;&nbsp;&nbsp;&nbsp; " + treeNode.name);
+        }
+        function beforeRename(treeId, treeNode, newName, isCancel) {
+            className = (className === "dark" ? "":"dark");
+            showLog((isCancel ? "<span style='color:red'>":"") + "[ "+getTime()+" beforeRename ]&nbsp;&nbsp;&nbsp;&nbsp; " + treeNode.name + (isCancel ? "</span>":""));
+            if (newName.length == 0) {
+                setTimeout(function() {
+                    var zTree = $.fn.zTree.getZTreeObj("treeDemo");
+                    zTree.cancelEditName();
+                    alert("节点名称不能为空.");
+                }, 0);
+                return false;
+            }
+            return true;
+        }
+        function onRename(e, treeId, treeNode, isCancel) {
+            showLog((isCancel ? "<span style='color:red'>":"") + "[ "+getTime()+" onRename ]&nbsp;&nbsp;&nbsp;&nbsp; " + treeNode.name + (isCancel ? "</span>":""));
+        }
+        function showRemoveBtn(treeId, treeNode) {
+            return !treeNode.isFirstNode;
+        }
+        function showRenameBtn(treeId, treeNode) {
+            return !treeNode.isLastNode;
+        }
+        function showLog(str) {
+            if (!log) log = $("#log");
+            log.append("<li class='"+className+"'>"+str+"</li>");
+            if(log.children("li").length > 8) {
+                log.get(0).removeChild(log.children("li")[0]);
+            }
+        }
+        function getTime() {
+            var now= new Date(),
+                h=now.getHours(),
+                m=now.getMinutes(),
+                s=now.getSeconds(),
+                ms=now.getMilliseconds();
+            return (h+":"+m+":"+s+ " " +ms);
+        }
+
+        var newCount = 1;
+        function addHoverDom(treeId, treeNode) {
+            var sObj = $("#" + treeNode.tId + "_span");
+            if (treeNode.editNameFlag || $("#addBtn_"+treeNode.tId).length>0) return;
+            var addStr = "<span class='button add' id='addBtn_" + treeNode.tId
+                + "' title='add node' onfocus='this.blur();'></span>";
+            sObj.after(addStr);
+            var btn = $("#addBtn_"+treeNode.tId);
+            if (btn) btn.bind("click", function(){
+                var zTree = $.fn.zTree.getZTreeObj("treeDemo");
+                zTree.addNodes(treeNode, {id:(100 + newCount), pId:treeNode.id, name:"new node" + (newCount++)});
+                return false;
+            });
+        };
+        function removeHoverDom(treeId, treeNode) {
+            $("#addBtn_"+treeNode.tId).unbind().remove();
+        };
+        function selectAll() {
+            var zTree = $.fn.zTree.getZTreeObj("treeDemo");
+            zTree.setting.edit.editNameSelectAll =  $("#selectAll").attr("checked");
+        }
+
+        $(document).ready(function(){
+            $.fn.zTree.init($("#treeDemo"), setting, zNodes);
+            $("#selectAll").bind("click", selectAll);
+        });
+        //-->
+    </SCRIPT>
+    <style type="text/css">
+        .ztree li span.button.add {margin-left:2px; margin-right: -1px; background-position:-144px 0; vertical-align:top; *vertical-align:middle}
+    </style>
+</HEAD>
+
+<BODY>
+<h1>高级 增 / 删 / 改 节点</h1>
+<h6>[ 文件路径: exedit/edit_super.html ]</h6>
+<div class="content_wrap">
+    <div class="zTreeDemoBackground left">
+        <ul id="treeDemo" class="ztree"></ul>
+    </div>
+
+</div>
+</BODY>
+</HTML>
